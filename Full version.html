@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Secret Messages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            display: none;
+        }
+        input, textarea {
+            width: 80%;
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            background: #222;
+            color: white;
+            border: 1px solid #00ccff;
+            border-radius: 5px;
+        }
+        .btn {
+            background: #00ccff;
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0099cc;
+            transform: scale(1.1);
+        }
+        .output {
+            background: black;
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            border-radius: 5px;
+            border: 1px solid #00ccff;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Private Secret Messages</h1>
+
+    <!-- Login Section -->
+    <div id="loginSection">
+        <h3>Set Your Private Password</h3>
+        <input type="password" id="setPassword" placeholder="Create a password">
+        <button class="btn" onclick="setLogin()">Set Password</button>
+    </div>
+
+    <!-- Secret Message Section -->
+    <div id="mainSection" class="container">
+        <h3>Write Your Secret Message</h3>
+        <textarea id="messageInput"></textarea>
+        <button class="btn" onclick="encodeMessage()">Encode</button>
+
+        <h3>Secret Code:</h3>
+        <div class="output" id="encodedOutput"></div>
+        <button class="btn" onclick="copyText()">Copy</button>
+        <button class="btn" id="shareBtn">Share on WhatsApp</button>
+
+        <h3>Enter Password to Decode</h3>
+        <input type="password" id="decodePassword" placeholder="Enter password">
+        <textarea id="codeInput" placeholder="Enter secret code"></textarea>
+        <button class="btn" onclick="decodeMessage()">Decode</button>
+
+        <h3>Original Message:</h3>
+        <div class="output" id="decodedOutput"></div>
+    </div>
+
+    <script>
+        let userPassword = "";
+
+        function setLogin() {
+            let password = document.getElementById("setPassword").value;
+            if (password.length < 4) {
+                alert("Password must be at least 4 characters!");
+                return;
+            }
+            userPassword = password;
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("mainSection").style.display = "block";
+        }
+
+        function encodeMessage() {
+            let message = document.getElementById("messageInput").value;
+            let encoded = "";
+            for (let i = 0; i < message.length; i++) {
+                encoded += message.charCodeAt(i) * 2 + "-";
+            }
+            document.getElementById("encodedOutput").innerText = encoded.slice(0, -1);
+        }
+
+        function decodeMessage() {
+            let enteredPassword = document.getElementById("decodePassword").value;
+            if (enteredPassword !== userPassword) {
+                alert("Incorrect password! Access denied.");
+                return;
+            }
+
+            let code = document.getElementById("codeInput").value.split("-");
+            let decoded = "";
+            for (let num of code) {
+                decoded += String.fromCharCode(num / 2);
+            }
+            document.getElementById("decodedOutput").innerText = decoded;
+        }
+
+        function copyText() {
+            let text = document.getElementById("encodedOutput").innerText;
+            navigator.clipboard.writeText(text);
+            alert("Copied to clipboard!");
+        }
+
+        document.getElementById("shareBtn").addEventListener("click", function () {
+            let text = document.getElementById("encodedOutput").innerText;
+            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, "_blank");
+        });
+    </script>
+
+</body>
+</html>
